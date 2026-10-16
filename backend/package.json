@@ -7,10 +7,11 @@
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
     "seed": "tsx src/seed-cli.ts",
+    "benchmark": "tsx scripts/benchmark.ts",
     "db:generate": "drizzle-kit generate",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json",
-    "lint": "oxlint src tests"
+    "lint": "oxlint src tests scripts"
   },
   "dependencies": {
     "@acme/shared": "*",
