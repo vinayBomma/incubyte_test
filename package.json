@@ -13,6 +13,9 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present"
   },
+  "overrides": {
+    "better-sqlite3": "12.11.1"
+  },
   "devDependencies": {
     "@types/node": "^24.19.2",
     "oxlint": "^1.88.0",
