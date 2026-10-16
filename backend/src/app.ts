@@ -3,7 +3,9 @@ import type { Db } from './db/client'
 import { type ErrorLogger, errorHandler, unknownRoute } from './http/errors'
 import { employeesRouter } from './routers/employees'
 import { healthRouter } from './routers/health'
+import { insightsRouter } from './routers/insights'
 import { createEmployeeService } from './services/employees'
+import { createInsightsService } from './services/insights'
 
 export interface AppDeps {
   db: Db
@@ -26,6 +28,7 @@ export function createApp({ db, today = utcToday, now, logError = console.error 
   const api = express.Router()
   api.use(healthRouter())
   api.use(employeesRouter(createEmployeeService({ db, today, now })))
+  api.use(insightsRouter(createInsightsService({ db })))
   app.use('/api', api)
 
   app.use(unknownRoute)
