@@ -11,6 +11,12 @@ function parseId(raw: string): number {
 
 export function employeesRouter(service: EmployeeService): Router {
   return Router()
+    .get('/employees', (req, res) => {
+      res.json(service.list(req.query))
+    })
+    .get('/meta/options', (_req, res) => {
+      res.json(service.options())
+    })
     .post('/employees', (req, res) => {
       res.status(201).json(service.create(req.body))
     })

@@ -1,4 +1,14 @@
-import { type Employee, type EmployeeInput, employeeInputSchema, employeeRuleErrors, fieldErrorsOf } from '@acme/shared'
+import {
+  COUNTRY_CURRENCY,
+  type Employee,
+  type EmployeeInput,
+  type EmployeePage,
+  type Options,
+  employeeInputSchema,
+  employeeQuerySchema,
+  employeeRuleErrors,
+  fieldErrorsOf,
+} from '@acme/shared'
 import type { Db } from '../db/client'
 import { DomainValidationError, NotFoundError } from '../errors'
 import * as repo from '../repositories/employees'
@@ -42,6 +52,25 @@ export function createEmployeeService({ db, today, now = () => new Date().toISOS
 
     delete(id: number): void {
       if (!repo.deleteEmployee(db, id)) throw notFound(id)
+    },
+
+    list(params: unknown): EmployeePage {
+      const parsed = employeeQuerySchema.safeParse(params)
+      if (!parsed.success) {
+        throw new DomainValidationError(fieldErrorsOf(parsed.error), 'Invalid list parameters.')
+      }
+      const query = parsed.data
+      return { ...repo.listEmployees(db, query), page: query.page, page_size: query.page_size }
+    },
+
+    options(): Options {
+      return {
+        countries: Object.entries(COUNTRY_CURRENCY)
+          .map(([name, currency]) => ({ name, currency }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
+        job_titles: repo.distinctJobTitles(db),
+        departments: repo.distinctDepartments(db),
+      }
     },
   }
 }
