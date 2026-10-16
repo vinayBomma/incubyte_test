@@ -8,7 +8,7 @@
 ## ADR-2: One shared zod package for the API contract
 - **Context:** TypeScript on both sides means the request shape, the validation rules and the response types can be written once instead of mirrored by hand.
 - **Decision:** An npm workspace package, `@acme/shared`, holds the country↔currency map, the zod input/query schemas, the business-rule check and the response types. The backend validates with it; the frontend form runs the same rules and imports the same types.
-- **Trade-off:** Client and server can't drift, and a contract change fails type-checking on both sides. The cost is workspace setup and one more package. The package ships TypeScript source (no build step): Vite compiles it for the browser and `tsx` runs it on the server (ADR-9).
+- **Trade-off:** Client and server can't drift, and a contract change fails type-checking on both sides. The cost is workspace setup, one more package, and zod in the browser bundle (about 74 → 98.5 KB gzipped, measured), which is acceptable for an internal tool. The package ships TypeScript source (no build step): Vite compiles it for the browser and `tsx` runs it on the server (ADR-9).
 
 ## ADR-3: SQLite via Drizzle ORM, kept swappable
 - **Context:** 10,000 rows, one HR user at a time, and an app that should be easy to run and deploy.

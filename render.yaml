@@ -1,0 +1,17 @@
+# Render Blueprint for the backend API. Steps: docs/deployment.md
+services:
+  - type: web
+    name: acme-salary-api
+    runtime: node
+    plan: free
+    # Repo root, not backend/: the npm workspace must install so @acme/shared resolves.
+    buildCommand: npm ci
+    # On start the app applies migrations and seeds 10,000 employees if the DB is empty.
+    startCommand: npm start -w backend
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.17.0
+      # Comma-separated frontend origins, e.g. your Vercel URL. Prompted for on first Blueprint sync.
+      - key: CORS_ORIGINS
+        sync: false
