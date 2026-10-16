@@ -1,3 +1,4 @@
+import cors from 'cors'
 import express, { type Express } from 'express'
 import type { Db } from './db/client'
 import { type ErrorLogger, errorHandler, unknownRoute } from './http/errors'
@@ -14,15 +15,20 @@ export interface AppDeps {
   /** Current timestamp as ISO 8601 UTC; injected so tests can pin created_at/updated_at. */
   now?: () => string
   logError?: ErrorLogger
+  /** Browser origins allowed by CORS; the default (none) suits the same-origin dev proxy. */
+  corsOrigins?: string[]
 }
 
 export function utcToday(): string {
   return new Date().toISOString().slice(0, 10)
 }
 
-export function createApp({ db, today = utcToday, now, logError = console.error }: AppDeps): Express {
+export function createApp({ db, today = utcToday, now, logError = console.error, corsOrigins = [] }: AppDeps): Express {
   const app = express()
   app.disable('x-powered-by')
+  if (corsOrigins.length > 0) {
+    app.use(cors({ origin: corsOrigins, methods: ['GET', 'POST', 'PUT', 'DELETE'], allowedHeaders: ['Content-Type'] }))
+  }
   app.use(express.json({ limit: '100kb' }))
 
   const api = express.Router()
